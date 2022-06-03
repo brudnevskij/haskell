@@ -1,0 +1,3 @@
+
+
+outputer xs = putStr xs

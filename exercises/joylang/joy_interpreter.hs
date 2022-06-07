@@ -22,12 +22,14 @@ isN (x:xs) | elem x ['0'.. '9'] = isN xs
 tokenize xs = tokenize' xs ""
 
 tokenize' (' ':xs) "" = tokenize' xs ""
+tokenize' ('\n':xs) "" = tokenize' xs ""
 tokenize' (']':xs) "" = "]" : (tokenize' xs "")
 tokenize' ('[':xs) "" = "[" : (tokenize' xs "")
 tokenize' (x:xs) ys
                    | x == '[' = (reverse ys):"[" : (tokenize' xs "")
                    | x == ']' = (reverse ys):"]" : (tokenize' xs "")
                    | x == ' ' = (reverse ys) : (tokenize' xs "")
+                   | x == '\n' = (reverse ys) : (tokenize' xs "")
                    | otherwise = tokenize' xs (x:ys)
 tokenize' "" "" = []
 tokenize' "" ys = (reverse ys):[]
@@ -46,9 +48,17 @@ parseList (x:xs) ys
                | otherwise = parseList xs (ys++[(S x)])
 parseList [] ys = ys
 
+{--
+strlist (S x:xs) = x++strlist xs
+strlist (I x:xs) = show x ++ strlist xs
+strlist (L x:xs) = (strlist x)++strlist xs
+strList [] = ""
+--}
+
+
 strstack (I x:xs) = (show x)++" "++strstack xs
 strstack (S x:xs) = x++" "++strstack xs
-strstack (L x:xs) = (show x)++" "++strstack xs
+strstack (L x:xs) = ("["++(strstack x)++"]")++" "++strstack xs
 strstack [] = ""
 
 convertI (I n) = n
@@ -71,6 +81,10 @@ ifOp ((L xs):(L ys):(S zs):rls)
                               | otherwise = []
 
 def ((L body):(S name):rls) = (tail name , body)
+dip ((L ex):(I x):rls) = ex ++ [I x]
+dip ((L ex):(S x):rls) = ex ++ [S x]
+i ((L xs):rs) = xs
+
 
 prtStr [] = return ()
 prtStr (x:xs)
@@ -83,9 +97,11 @@ fsearch s (x:xs)
 fsearch s [] = (False, [])
 
 polish' (xs, ys, zs)
-               | null xs = prtStr("\x1b[32m"++ (strstack ys')++"\x1b[0m"++(strstack xs') ++"\n")
-               | otherwise = prtStr("\x1b[32m"++ (strstack ys') ++"\x1b[0m"++(strstack xs') ++ "\n") >> polish' (xs', ys', zs')
+               | null xs = prtStr("\x1b[32m"++ (strstack (reverse ys'))++"\x1b[0m"++(strstack xs') ++"\n")
+               | otherwise = prtStr("\x1b[32m"++ (strstack (reverse ys')) ++"\x1b[0m"++(strstack xs') ++ "\n") >> polish' (xs', ys', zs')
                where (xs', ys', zs') = polish xs ys zs
+
+-- 3 [2 +] i -> 3 2 + -> 5
 
 polish (L x:xs) ys zs = (xs, (L x:ys), zs)
 polish (I x:xs) ys zs =  (xs, (I x:ys), zs)
@@ -104,6 +120,8 @@ polish (S x:xs) ys zs
                    | x == "false" = (xs, (S x):ys, zs)
                    | x == "null" = (xs, null'(head ys):tail ys, zs)
                    | x == "if" = (((ifOp ys)++xs), tail(tail (tail(ys))), zs)
+                   | x == "dip" = (dip(ys)++xs, tail(tail ys),zs)
+                   | x == "i" = (i(ys)++xs,(tail ys),zs)
                    | (head x) == ':' = (xs, (S x:ys), zs)
                    | x == "def" = (xs, tail(tail ys), def(ys):zs)
                    | fst(fsearch x zs) = (snd(fsearch x zs)++xs, ys, zs)
@@ -111,14 +129,31 @@ polish (S x:xs) ys zs
 polish [] ys zs = ([], ys, zs)
 
 
+-- 5 9 [2 +] dip -> 5 2 + 9 -> 7 9
+{--
+expr: 5 9 [2 +] dip
+stack: 
 
+expr: dip
+stack: 5 9 [2 +]
+
+expr: 2 + 9
+stack: 5
+
+expr: + 9
+satack: 5 2
+
+exzpr: 9
+s: 7
+--}
 main :: IO ()
 main = do
-    helloFile <- openFile "program.txt" ReadMode
-    firstLine <- hGetLine helloFile
+    --helloFile <- openFile "program.txt" ReadMode
+    --firstLine <- hGetLine helloFile
     --polish()
-    polish' ((parseList  (tokenize firstLine) []), [], [])
-    putStrLn firstLine
-    hClose helloFile
+    line <- readFile "test.txt"
+    polish' ((parseList  (tokenize line) []), [], [])
+    --putStrLn firstLine
+    --hClose helloFile
     putStrLn "done!"
 

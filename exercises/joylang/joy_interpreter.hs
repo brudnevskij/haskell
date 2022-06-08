@@ -58,7 +58,7 @@ strList [] = ""
 
 strstack (I x:xs) = (show x)++" "++strstack xs
 strstack (S x:xs) = x++" "++strstack xs
-strstack (L x:xs) = ("["++(strstack x)++"]")++" "++strstack xs
+strstack (L x:xs) = ("["++(strstack x)++"]")++strstack xs
 strstack [] = ""
 
 convertI (I n) = n
@@ -69,7 +69,9 @@ first (L (L x:xs)) = L x
 
 rest (L (x:xs)) = L xs
 
-cons (L (xs))(L (ys)) = L (xs++ys)
+cons (L (xs))(L (ys)) = L ((L xs):ys)
+cons (I (xs))(L (ys)) = L ((I xs):ys)
+cons (S (xs))(L (ys)) = L ((S xs):ys)
 
 null' (L xs)
            | null xs = S "true"
@@ -148,12 +150,7 @@ s: 7
 --}
 main :: IO ()
 main = do
-    --helloFile <- openFile "program.txt" ReadMode
-    --firstLine <- hGetLine helloFile
-    --polish()
     line <- readFile "test.txt"
     polish' ((parseList  (tokenize line) []), [], [])
-    --putStrLn firstLine
-    --hClose helloFile
     putStrLn "done!"
 

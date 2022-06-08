@@ -2,9 +2,3 @@
 :count [dup null [drop 0] [rest count 1 +] if] def 
 :last [dup one [first][rest last] if] def [1 2 3 48] last
 
-
-[1 2 4] [5 6] append -> [1 2 4 5 6]
-[5 8 9 2] butlast -> [5 8 9]
-[1 2 3] [2 *] map -> [2 4 6]
-[7 9 -2 1 -6] [0 >] filter -> [7 9 1]
-[3 6 1 0] qsort -> [0 1 3 6]

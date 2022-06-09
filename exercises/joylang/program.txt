@@ -1,4 +1,5 @@
 :one [dup null [false] [rest null] if ] def
 :count [dup null [drop 0] [rest count 1 +] if] def 
-:last [dup one [first][rest last] if] def [1 2 3 48] last
-
+:last [dup one [first][rest last] if] def
+:append [dup null [drop][dup rest [first cons] dip append] if] def
+:butlast [dup one [][dup first [] cons [] cons dip rest butlast]if append] def [1 2 3] butlast

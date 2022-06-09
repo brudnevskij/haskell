@@ -71,7 +71,10 @@ rest (L (x:xs)) = L xs
 
 cons (L (xs))(L (ys)) = L ((L xs):ys)
 cons (I (xs))(L (ys)) = L ((I xs):ys)
+cons (L (xs))(I (ys)) = L (xs ++[(I ys)])
 cons (S (xs))(L (ys)) = L ((S xs):ys)
+
+
 
 null' (L xs)
            | null xs = S "true"
@@ -85,6 +88,7 @@ ifOp ((L xs):(L ys):(S zs):rls)
 def ((L body):(S name):rls) = (tail name , body)
 dip ((L ex):(I x):rls) = ex ++ [I x]
 dip ((L ex):(S x):rls) = ex ++ [S x]
+dip ((L ex):(L x):rls) = ex ++  [L x]
 i ((L xs):rs) = xs
 
 
@@ -148,9 +152,14 @@ satack: 5 2
 exzpr: 9
 s: 7
 --}
-main :: IO ()
-main = do
+test :: IO ()
+test = do
     line <- readFile "test.txt"
     polish' ((parseList  (tokenize line) []), [], [])
     putStrLn "done!"
 
+main :: IO ()
+main = do
+    line <- readFile "program.txt"
+    polish' ((parseList  (tokenize line) []), [], [])
+    putStrLn "done!"

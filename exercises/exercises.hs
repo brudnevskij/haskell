@@ -25,6 +25,9 @@ drop' n (x:xs) | n > 0 = drop' (n - 1) xs
                | n < 0 = []
                | otherwise = x:xs
 
+
+
+
 take' n xs | n > 0 = head xs : take' (n - 1) (tail xs)
            | otherwise = []
 

@@ -26,3 +26,7 @@ isPalindrome xs | null xs = True
                 | myLength xs == 1 = True
                 | head xs == last xs = isPalindrome (tail(init xs))
                 | otherwise = False
+
+blast' (x:xs)
+            | null xs = []
+            | otherwise = x:(blast' xs)

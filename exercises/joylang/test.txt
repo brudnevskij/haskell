@@ -1,1 +1,8 @@
-[1 2 3][1 2 3] cons
+:append [dup null [drop][ dup rest [first cons] dip append]if] def
+:swap[[] cons dip] def
+:one [dup null [false] [rest null] if ] def
+:map [swap dup null 
+[drop drop]
+[swap [] cons cons dup first first swap dup rest i swap i swap rest swap map [dip] swap] if]
+def
+[1 2] [2] map

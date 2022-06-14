@@ -73,7 +73,7 @@ cons (L (xs))(L (ys)) = L ((L xs):ys)
 cons (I (xs))(L (ys)) = L ((I xs):ys)
 cons (L (xs))(I (ys)) = L (xs ++[(I ys)])
 cons (S (xs))(L (ys)) = L ((S xs):ys)
-
+cons (L (xs))(S (ys)) = L (( xs)++[(S ys)])
 
 
 null' (L xs)
@@ -91,6 +91,21 @@ dip ((L ex):(S x):rls) = ex ++ [S x]
 dip ((L ex):(L x):rls) = ex ++  [L x]
 i ((L xs):rs) = xs
 
+less ((I x):(I y):rest)
+                      | y < x = (S "true")
+                      | otherwise = (S "false")
+
+more ((I x):(I y):rest)
+                      | y > x = (S "true")
+                      | otherwise = (S "false")
+
+equal ((I x):(I y):rest)
+                      | x == y = (S "true")
+                      | otherwise = (S "false")
+
+notequal ((I x):(I y):rest)
+                      | x /= y = (S "true")
+                      | otherwise = (S "false")
 
 prtStr [] = return ()
 prtStr (x:xs)
@@ -128,6 +143,10 @@ polish (S x:xs) ys zs
                    | x == "if" = (((ifOp ys)++xs), tail(tail (tail(ys))), zs)
                    | x == "dip" = (dip(ys)++xs, tail(tail ys),zs)
                    | x == "i" = (i(ys)++xs,(tail ys),zs)
+                   | x == "<" = (xs, ((less ys):(tail(tail ys))), zs)
+                   | x == ">" = (xs, ((more ys):(tail(tail ys))), zs)
+                   | x == "==" = (xs, ((equal ys):(tail(tail ys))), zs)
+                   | x == "!=" = (xs, ((notequal ys):(tail(tail ys))), zs)
                    | (head x) == ':' = (xs, (S x:ys), zs)
                    | x == "def" = (xs, tail(tail ys), def(ys):zs)
                    | fst(fsearch x zs) = (snd(fsearch x zs)++xs, ys, zs)

@@ -69,12 +69,17 @@ first (L (L x:xs)) = L x
 
 rest (L (x:xs)) = L xs
 
+{-
 cons (L (xs))(L (ys)) = L ((L xs):ys)
 cons (I (xs))(L (ys)) = L ((I xs):ys)
 cons (L (xs))(I (ys)) = L (xs ++[(I ys)])
 cons (S (xs))(L (ys)) = L ((S xs):ys)
 cons (L (xs))(S (ys)) = L (( xs)++[(S ys)])
+-}
 
+cons (I (xs)) (L (ys)) = L ((I xs):ys)
+cons (S (xs)) (L (ys)) = L ((S xs):ys)
+cons (L (xs)) (L (ys)) = L ((L xs):ys)
 
 null' (L xs)
            | null xs = S "true"

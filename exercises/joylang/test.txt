@@ -1,8 +1,24 @@
-:append [dup null [drop][ dup rest [first cons] dip append]if] def
+:appendE 
+[swap dup null
+[drop]
+[swap [dup last] dip cons swap butlast swap appendE]
+if
+] def
+:append 
+[swap dup null 
+[drop]
+[swap [uncons] dip append cons]
+if] 
+def
+:last [dup one [first][rest last] if] def
 :swap[[] cons dip] def
 :one [dup null [false] [rest null] if ] def
-:map [swap dup null 
-[drop drop]
-[swap [] cons cons dup first first swap dup rest i swap i swap rest swap map [dip] swap] if]
+:map 
+[swap dup null 
+[swap drop]
+[uncons [ swap dup] dip []cons cons [cons [] swap dip drop] dip i swap map cons]
+if]
 def
-[1 2] [2] map
+:butlast [dup one[drop []][dup first swap rest butlast cons ]if]def
+:uncons [dup first swap rest] def
+

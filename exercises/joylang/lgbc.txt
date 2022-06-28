@@ -1,0 +1,25 @@
+
+
+
+:count [null[ 0][ uncons count [cons] dip 1 + drop2 drop2]if] def
+:one [null [false][uncons null [cons] dip]if] def
+:unlast [ one [uncons swap][uncons unlast [cons] dip ]if] def
+
+:map[
+swap null 
+[drop2 []]
+[uncons [[dup]dip swap cons swap [i]dip ] dip swap  map  [cons] dip swap [cons] dip swap]
+if
+] def
+
+:filter[
+swap null
+[drop2 []]
+[uncons 
+    [swap dup [cons i] dip]dip swap filter 
+    [swap [swap dup [swap cons]dip swap][]if] dip swap [cons] dip swap]
+if
+]def
+
+
+[1 2 3][1 == drop2] filter
